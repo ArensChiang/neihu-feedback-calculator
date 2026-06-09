@@ -1,0 +1,792 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>大內湖科技園區次核心產業使用許可回饋金計算</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #202124;
+      --muted: #687076;
+      --line: #d7dde2;
+      --panel: #ffffff;
+      --band: #f4f7f8;
+      --field: #fbfcfd;
+      --primary: #11615f;
+      --primary-strong: #0a4442;
+      --accent: #b85b2b;
+      --warn: #8a4b00;
+      --warn-bg: #fff7e8;
+      --ok-bg: #eaf6f1;
+      --shadow: 0 14px 35px rgba(34, 51, 59, .09);
+      font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--band);
+      line-height: 1.55;
+    }
+
+    header {
+      background: linear-gradient(100deg, #f7faf9 0%, #e5efed 58%, #f7efe9 100%);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .wrap {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      min-height: 210px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(280px, .75fr);
+      gap: 28px;
+      align-items: end;
+      padding: 34px 0 26px;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(28px, 4vw, 48px);
+      line-height: 1.14;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin: 0;
+      max-width: 760px;
+      color: #3c474c;
+      font-size: 18px;
+    }
+
+    .formula-box {
+      background: rgba(255, 255, 255, .8);
+      border: 1px solid rgba(17, 97, 95, .2);
+      border-radius: 8px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .formula-label {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    .formula {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 15px;
+      overflow-wrap: anywhere;
+    }
+
+    main {
+      padding: 28px 0 44px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(340px, .78fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    section {
+      background: transparent;
+      margin-bottom: 22px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: end;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 19px;
+      line-height: 1.35;
+    }
+
+    .hint {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .field {
+      min-width: 0;
+    }
+
+    label {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: #2f383c;
+      font-weight: 650;
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+
+    .symbol {
+      color: var(--primary);
+      font-family: Consolas, "Courier New", monospace;
+      font-weight: 700;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid #c9d1d6;
+      border-radius: 6px;
+      background: var(--field);
+      color: var(--ink);
+      font: inherit;
+      min-height: 42px;
+      padding: 9px 11px;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 92px;
+      resize: vertical;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(17, 97, 95, .14);
+      background: #fff;
+    }
+
+    .unit-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 72px;
+      gap: 8px;
+    }
+
+    .toggle-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 2px 0 16px;
+    }
+
+    .toggle-row label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 36px;
+      padding: 7px 12px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      color: #344044;
+      cursor: pointer;
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .toggle-row input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+      width: 1px;
+      height: 1px;
+    }
+
+    .toggle-row label:has(input:checked) {
+      border-color: var(--primary);
+      background: var(--ok-bg);
+      color: var(--primary-strong);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    button {
+      border: 1px solid transparent;
+      border-radius: 6px;
+      min-height: 42px;
+      padding: 9px 14px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      background: var(--primary);
+      color: #fff;
+    }
+
+    button:hover {
+      background: var(--primary-strong);
+    }
+
+    button.secondary {
+      background: #fff;
+      border-color: var(--line);
+      color: #293236;
+    }
+
+    button.secondary:hover {
+      background: #eef3f4;
+    }
+
+    .result {
+      position: sticky;
+      top: 18px;
+    }
+
+    .total {
+      border-left: 5px solid var(--primary);
+      background: #fff;
+      padding: 18px;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .total small {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .money {
+      font-size: clamp(31px, 4vw, 48px);
+      line-height: 1.05;
+      font-weight: 850;
+      color: var(--primary-strong);
+      overflow-wrap: anywhere;
+    }
+
+    .submoney {
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 8px;
+    }
+
+    .breakdown {
+      margin-top: 16px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1.25fr minmax(120px, .85fr);
+      gap: 12px;
+      padding: 12px 14px;
+      border-bottom: 1px solid #edf0f2;
+    }
+
+    .row:last-child {
+      border-bottom: 0;
+    }
+
+    .row b {
+      font-size: 14px;
+    }
+
+    .row span {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      overflow-wrap: anywhere;
+    }
+
+    .notice {
+      margin-top: 16px;
+      border: 1px solid #f0d7a8;
+      background: var(--warn-bg);
+      color: var(--warn);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 14px;
+    }
+
+    .print-sheet {
+      margin-top: 18px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .print-sheet h3 {
+      margin: 0 0 10px;
+      font-size: 16px;
+    }
+
+    .calc-line {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 13px;
+      color: #354147;
+      overflow-wrap: anywhere;
+      margin: 8px 0 0;
+    }
+
+    .empty {
+      color: var(--muted);
+    }
+
+    @media (max-width: 900px) {
+      .topbar, .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .result {
+        position: static;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .wrap {
+        width: min(100% - 22px, 1180px);
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section-head {
+        display: block;
+      }
+
+      .hint {
+        margin-top: 4px;
+      }
+
+      .row {
+        grid-template-columns: 1fr;
+      }
+
+      .row span {
+        text-align: left;
+      }
+
+      .money {
+        font-size: 34px;
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+
+      header, .actions, .notice {
+        display: none;
+      }
+
+      main {
+        padding: 0;
+      }
+
+      .wrap {
+        width: 100%;
+      }
+
+      .layout {
+        display: block;
+      }
+
+      .panel, .total, .breakdown, .print-sheet {
+        box-shadow: none;
+      }
+
+      .result {
+        position: static;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap topbar">
+      <div>
+        <h1>大內湖科技園區回饋金計算</h1>
+        <p class="subtitle">依「次核心產業使用許可」回饋金公式試算，輸入地價、基地與樓地板面積後，即時產出金額與可列印明細。</p>
+      </div>
+      <div class="formula-box" aria-label="計算公式">
+        <div class="formula-label">計算式</div>
+        <div class="formula">回饋金 = (1 - V0 / V1) x 50% x R x Sigma A x Delta FA / Sigma FA x V0</div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="layout">
+      <div>
+        <section>
+          <div class="section-head">
+            <h2>案件資料</h2>
+            <p class="hint">可留空，主要用於列印或留存。</p>
+          </div>
+          <div class="panel">
+            <div class="grid">
+              <div class="field">
+                <label for="caseName">案件名稱</label>
+                <input id="caseName" type="text" placeholder="例如：內湖區○○路使用許可案">
+              </div>
+              <div class="field">
+                <label for="caseDate">試算日期</label>
+                <input id="caseDate" type="date">
+              </div>
+              <div class="field">
+                <label for="address">基地地址</label>
+                <input id="address" type="text" placeholder="臺北市內湖區...">
+              </div>
+              <div class="field">
+                <label for="landNo">地段地號</label>
+                <input id="landNo" type="text" placeholder="例如：○○段○小段○地號">
+              </div>
+            </div>
+            <div class="field" style="margin-top:14px">
+              <label for="notes">備註</label>
+              <textarea id="notes" placeholder="可記錄公告土地現值年度、資料來源或審查假設。"></textarea>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div class="section-head">
+            <h2>計算參數</h2>
+            <p class="hint">請確認單位一致；面積預設為平方公尺。</p>
+          </div>
+          <div class="panel">
+            <div class="toggle-row" aria-label="小數與進位設定">
+              <label><input type="radio" name="rounding" value="none">不進位</label>
+              <label><input type="radio" name="rounding" value="yuan" checked>四捨五入至元</label>
+              <label><input type="radio" name="rounding" value="thousand">四捨五入至千元</label>
+            </div>
+
+            <div class="grid">
+              <div class="field">
+                <label for="v0">變更使用前價值 <span class="symbol">V0</span></label>
+                <div class="unit-row">
+                  <input id="v0" inputmode="decimal" type="number" min="0" step="any" placeholder="例如：120000">
+                  <select id="v0Unit" aria-label="V0 單位">
+                    <option value="sqm">元/m²</option>
+                    <option value="ping">元/坪</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field">
+                <label for="v1">變更使用後價值 <span class="symbol">V1</span></label>
+                <div class="unit-row">
+                  <input id="v1" inputmode="decimal" type="number" min="0" step="any" placeholder="例如：180000">
+                  <select id="v1Unit" aria-label="V1 單位">
+                    <option value="sqm">元/m²</option>
+                    <option value="ping">元/坪</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field">
+                <label for="r">比例值 <span class="symbol">R</span></label>
+                <div class="unit-row">
+                  <input id="r" inputmode="decimal" type="number" min="0" step="any" placeholder="例如：0.6 或 60">
+                  <select id="rUnit" aria-label="R 單位">
+                    <option value="ratio">小數</option>
+                    <option value="percent">%</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field">
+                <label for="landArea">基地面積 <span class="symbol">Sigma A</span></label>
+                <div class="unit-row">
+                  <input id="landArea" inputmode="decimal" type="number" min="0" step="any" placeholder="例如：1500">
+                  <select id="landAreaUnit" aria-label="基地面積單位">
+                    <option value="sqm">m²</option>
+                    <option value="ping">坪</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field">
+                <label for="deltaFa">申請使用樓地板面積 <span class="symbol">Delta FA</span></label>
+                <div class="unit-row">
+                  <input id="deltaFa" inputmode="decimal" type="number" min="0" step="any" placeholder="例如：900">
+                  <select id="deltaFaUnit" aria-label="申請使用樓地板面積單位">
+                    <option value="sqm">m²</option>
+                    <option value="ping">坪</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field">
+                <label for="totalFa">建築物總樓地板面積 <span class="symbol">Sigma FA</span></label>
+                <div class="unit-row">
+                  <input id="totalFa" inputmode="decimal" type="number" min="0" step="any" placeholder="例如：6000">
+                  <select id="totalFaUnit" aria-label="總樓地板面積單位">
+                    <option value="sqm">m²</option>
+                    <option value="ping">坪</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button id="sampleBtn" type="button">填入範例</button>
+              <button id="clearBtn" class="secondary" type="button">清除數值</button>
+              <button id="printBtn" class="secondary" type="button">列印明細</button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <aside class="result" aria-live="polite">
+        <div class="total">
+          <small>試算回饋金</small>
+          <div id="totalMoney" class="money">請輸入資料</div>
+          <div id="totalSub" class="submoney">完成必要欄位後會自動計算。</div>
+        </div>
+
+        <div class="breakdown" id="breakdown">
+          <div class="row"><b>價值增益係數</b><span id="gainRatio" class="empty">-</span></div>
+          <div class="row"><b>面積分攤比例</b><span id="floorShare" class="empty">-</span></div>
+          <div class="row"><b>折半後比例</b><span id="halfRatio" class="empty">-</span></div>
+          <div class="row"><b>未進位金額</b><span id="rawMoney" class="empty">-</span></div>
+        </div>
+
+        <div class="notice" id="notice">
+          本工具供試算與核對用，實際認定、地價資料及回饋金核算仍以主管機關審查結果為準。
+        </div>
+
+        <div class="print-sheet">
+          <h3>計算明細</h3>
+          <div id="caseSummary" class="empty">尚未輸入案件資料。</div>
+          <p id="calcLine" class="calc-line">等待輸入必要欄位。</p>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    const PING_TO_SQM = 3.305785;
+    const inputs = {
+      caseName: document.querySelector("#caseName"),
+      caseDate: document.querySelector("#caseDate"),
+      address: document.querySelector("#address"),
+      landNo: document.querySelector("#landNo"),
+      notes: document.querySelector("#notes"),
+      v0: document.querySelector("#v0"),
+      v1: document.querySelector("#v1"),
+      r: document.querySelector("#r"),
+      landArea: document.querySelector("#landArea"),
+      deltaFa: document.querySelector("#deltaFa"),
+      totalFa: document.querySelector("#totalFa"),
+      v0Unit: document.querySelector("#v0Unit"),
+      v1Unit: document.querySelector("#v1Unit"),
+      rUnit: document.querySelector("#rUnit"),
+      landAreaUnit: document.querySelector("#landAreaUnit"),
+      deltaFaUnit: document.querySelector("#deltaFaUnit"),
+      totalFaUnit: document.querySelector("#totalFaUnit")
+    };
+
+    const output = {
+      totalMoney: document.querySelector("#totalMoney"),
+      totalSub: document.querySelector("#totalSub"),
+      gainRatio: document.querySelector("#gainRatio"),
+      floorShare: document.querySelector("#floorShare"),
+      halfRatio: document.querySelector("#halfRatio"),
+      rawMoney: document.querySelector("#rawMoney"),
+      caseSummary: document.querySelector("#caseSummary"),
+      calcLine: document.querySelector("#calcLine")
+    };
+
+    inputs.caseDate.valueAsDate = new Date();
+
+    function numeric(value) {
+      const number = Number(value);
+      return Number.isFinite(number) ? number : NaN;
+    }
+
+    function valuePerSqm(value, unit) {
+      return unit === "ping" ? value / PING_TO_SQM : value;
+    }
+
+    function areaSqm(value, unit) {
+      return unit === "ping" ? value * PING_TO_SQM : value;
+    }
+
+    function normalizeR(value) {
+      return inputs.rUnit.value === "percent" ? value / 100 : value;
+    }
+
+    function money(value, digits = 0) {
+      return new Intl.NumberFormat("zh-TW", {
+        style: "currency",
+        currency: "TWD",
+        minimumFractionDigits: digits,
+        maximumFractionDigits: digits
+      }).format(value);
+    }
+
+    function number(value, digits = 4) {
+      return new Intl.NumberFormat("zh-TW", {
+        maximumFractionDigits: digits
+      }).format(value);
+    }
+
+    function pct(value) {
+      return new Intl.NumberFormat("zh-TW", {
+        style: "percent",
+        maximumFractionDigits: 4
+      }).format(value);
+    }
+
+    function roundingMode() {
+      return document.querySelector("input[name='rounding']:checked").value;
+    }
+
+    function roundMoney(value) {
+      if (roundingMode() === "thousand") return Math.round(value / 1000) * 1000;
+      if (roundingMode() === "yuan") return Math.round(value);
+      return value;
+    }
+
+    function markEmpty(element, text = "-") {
+      element.textContent = text;
+      element.classList.add("empty");
+    }
+
+    function setValue(element, text) {
+      element.textContent = text;
+      element.classList.remove("empty");
+    }
+
+    function readParams() {
+      const v0 = valuePerSqm(numeric(inputs.v0.value), inputs.v0Unit.value);
+      const v1 = valuePerSqm(numeric(inputs.v1.value), inputs.v1Unit.value);
+      const r = normalizeR(numeric(inputs.r.value));
+      const landArea = areaSqm(numeric(inputs.landArea.value), inputs.landAreaUnit.value);
+      const deltaFa = areaSqm(numeric(inputs.deltaFa.value), inputs.deltaFaUnit.value);
+      const totalFa = areaSqm(numeric(inputs.totalFa.value), inputs.totalFaUnit.value);
+      return { v0, v1, r, landArea, deltaFa, totalFa };
+    }
+
+    function validate(params) {
+      const missing = Object.entries(params)
+        .filter(([, value]) => !Number.isFinite(value) || value <= 0)
+        .map(([key]) => key);
+      if (missing.length) return "請先輸入所有必要欄位，且數值需大於 0。";
+      if (params.v1 <= params.v0) return "V1 需大於 V0，才會產生正的價值增益係數。";
+      if (params.deltaFa > params.totalFa) return "申請使用樓地板面積不可大於建築物總樓地板面積。";
+      return "";
+    }
+
+    function updateCaseSummary() {
+      const items = [
+        inputs.caseName.value.trim(),
+        inputs.address.value.trim(),
+        inputs.landNo.value.trim(),
+        inputs.caseDate.value ? `試算日期：${inputs.caseDate.value}` : "",
+        inputs.notes.value.trim()
+      ].filter(Boolean);
+
+      if (!items.length) {
+        markEmpty(output.caseSummary, "尚未輸入案件資料。");
+      } else {
+        setValue(output.caseSummary, items.join("｜"));
+      }
+    }
+
+    function update() {
+      updateCaseSummary();
+      const params = readParams();
+      const error = validate(params);
+
+      if (error) {
+        output.totalMoney.textContent = "請輸入資料";
+        output.totalSub.textContent = error;
+        markEmpty(output.gainRatio);
+        markEmpty(output.floorShare);
+        markEmpty(output.halfRatio);
+        markEmpty(output.rawMoney);
+        output.calcLine.textContent = "等待輸入必要欄位。";
+        return;
+      }
+
+      const gainRatio = 1 - params.v0 / params.v1;
+      const floorShare = params.deltaFa / params.totalFa;
+      const halfRatio = gainRatio * 0.5 * params.r * floorShare;
+      const raw = gainRatio * 0.5 * params.r * params.landArea * floorShare * params.v0;
+      const rounded = roundMoney(raw);
+      const moneyDigits = roundingMode() === "none" ? 2 : 0;
+
+      output.totalMoney.textContent = money(rounded, moneyDigits);
+      output.totalSub.textContent = roundingMode() === "none"
+        ? `未進位金額：${money(raw, 2)}`
+        : `依目前設定進位；未進位金額為 ${money(raw, 2)}。`;
+
+      setValue(output.gainRatio, `${pct(gainRatio)} (${number(gainRatio, 6)})`);
+      setValue(output.floorShare, `${pct(floorShare)} (${number(params.deltaFa, 3)} / ${number(params.totalFa, 3)})`);
+      setValue(output.halfRatio, `${pct(halfRatio)} (${number(halfRatio, 8)})`);
+      setValue(output.rawMoney, money(raw, 2));
+
+      output.calcLine.textContent =
+        `(${number(1, 0)} - ${number(params.v0, 4)} / ${number(params.v1, 4)}) x 50% x ${number(params.r, 6)} x ${number(params.landArea, 3)} x ${number(params.deltaFa, 3)} / ${number(params.totalFa, 3)} x ${number(params.v0, 4)} = ${money(raw, 2)}`;
+    }
+
+    function clearValues() {
+      ["v0", "v1", "r", "landArea", "deltaFa", "totalFa"].forEach((id) => {
+        inputs[id].value = "";
+      });
+      update();
+    }
+
+    function fillSample() {
+      inputs.caseName.value = "大內湖次核心產業使用許可試算";
+      inputs.address.value = "臺北市內湖區範例基地";
+      inputs.landNo.value = "範例段地號";
+      inputs.notes.value = "範例數字僅供測試界面。";
+      inputs.v0.value = "120000";
+      inputs.v1.value = "180000";
+      inputs.r.value = "0.6";
+      inputs.landArea.value = "1500";
+      inputs.deltaFa.value = "900";
+      inputs.totalFa.value = "6000";
+      inputs.v0Unit.value = "sqm";
+      inputs.v1Unit.value = "sqm";
+      inputs.rUnit.value = "ratio";
+      inputs.landAreaUnit.value = "sqm";
+      inputs.deltaFaUnit.value = "sqm";
+      inputs.totalFaUnit.value = "sqm";
+      update();
+    }
+
+    document.querySelectorAll("input, select, textarea").forEach((element) => {
+      element.addEventListener("input", update);
+      element.addEventListener("change", update);
+    });
+
+    document.querySelector("#clearBtn").addEventListener("click", clearValues);
+    document.querySelector("#sampleBtn").addEventListener("click", fillSample);
+    document.querySelector("#printBtn").addEventListener("click", () => window.print());
+    update();
+  </script>
+</body>
+</html>
